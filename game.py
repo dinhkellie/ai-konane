@@ -30,10 +30,10 @@ class Konane:
 	def boardToString(self, board):
 		result = "  "
 		for i in range(self.size):
-			result += str(i) + " "
+			result += str(i+1) + " "
 		result += "\n"
 		for i in range(self.size):
-			result += str(i) + " "
+			result += str(i+1) + " "
 			for j in range(self.size):
 				result += str(board[i][j]) + " "
 			result += "\n"
