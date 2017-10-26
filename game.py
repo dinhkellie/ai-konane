@@ -40,7 +40,7 @@ class Konane:
 		return result
 
 	# For moves, all add 1 since the board starts 1-8 rather than 0-7
-	# Moves are a tuple of four integers [r1, c1, r2, c2]
+	# Moves are a tuple of four integers [row1, col1, row2, col2]
 	# r1, c1 refer to starting position of piece and r2, c2 are end position
 	# Opening moves are taken away not moved so r1 and r2 and c1 and c2 are the same
 
@@ -79,9 +79,7 @@ class Konane:
 			legalMoves.append([m-1, m]*2)
 			return legalMoves
 
-	def valid(self, move):
-		return move[0] >= 1 and move[1] >= 1 and move[0] <= self.size and move[1] <= self.size
-
+	# Checks if the board is at a beginning state by checking whether it contains '.' since that is the symbol for an empty space
 	def openingMove(self, board):
 		count = 0
 		for x in range(self.size):
@@ -89,6 +87,9 @@ class Konane:
 				if board[x][y] == ".":
 					count += 1
 		return count <= 1
+
+	def valid(self, move):
+		return move[0] >= 1 and move[1] >= 1 and move[0] <= self.size and move[1] <= self.size
 
 	# Returns all the legal moves for the given player at the current board confguration
 	def getLegalMoves(self, board, player):
@@ -101,14 +102,42 @@ class Konane:
 			else:
 				return self.secondMove(board)
 		else:
+			# TODO 
 			return []
 
+	# Updates board based on move if the move is valid to the board and is a legal move
+	def attemptMove(self, board, player, move):
+		# how to get which player's turn?
+		legalMoves = self.getLegalMoves(board, player)
+		print "Legal moves:",legalMoves
+
+		if not self.valid(move):
+			raise ValueError('Invalid move.')
+		elif move not in legalMoves:
+			raise ValueError('Illegal move.')
+		else:
+			newBoard = board
+			newBoard[move[2]][move[3]] = newBoard[move[0]][move[1]]
+			newBoard[move[0]][move[1]] = "."
+			return newBoard
 
 	def play(self, n, player1, player2):
 		self.start()
+		print "Welcome to Konane!"
 		for i in range (0, n):
 			print self
-		move = player1.getMove(self.board)
+		move = 0
+		while (move != -1):
+			newBoard = []
+			print "Turn:", player1.symbol
+			move = player1.getMove(self.board)
+			try:
+				newBoard = self.attemptMove(self.board, player1, move)
+			except ValueError:
+				print "Unable to make move."
+			if newBoard != []:
+				self.board = newBoard
+			self.boardToString(newBoard)
 		
 
 class Player(Konane):
@@ -119,8 +148,9 @@ class Player(Konane):
 	def getMove(self, board):
 		r1, c1, r2, c2 = input("Enter position of piece to move and where to move it. r1, c1, r2, c2 : ")
 		if r1 == -1:
-			return []
-		return [r1, c1, r2, c2]
+			return -1;
+		else:
+			return [r1, c1, r2, c2]
 
 playerX = Player('X')
 playerO = Player('O')
