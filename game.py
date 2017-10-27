@@ -86,6 +86,7 @@ class Konane:
 			for y in range (self.size):
 				if board[x][y] == ".":
 					count += 1
+		print "opening move?", count<= 1
 		return count <= 1
 
 	def valid(self, move):
@@ -97,9 +98,10 @@ class Konane:
 		# Determines whether the current move is first or second based on symbols on the board
 		if self.openingMove(board):
 			# Dark always goes first
-			if player == 'X':
+			if player.symbol == 'X':
 				return self.firstMove(board)
 			else:
+				print "got here"
 				return self.secondMove(board)
 		else:
 			# TODO 
@@ -109,7 +111,6 @@ class Konane:
 	def attemptMove(self, board, player, move):
 		# how to get which player's turn?
 		legalMoves = self.getLegalMoves(board, player)
-		print "Legal moves:",legalMoves
 
 		if not self.valid(move):
 			raise ValueError('Invalid move.')
@@ -117,28 +118,43 @@ class Konane:
 			raise ValueError('Illegal move.')
 		else:
 			newBoard = board
-			newBoard[move[2]][move[3]] = newBoard[move[0]][move[1]]
-			newBoard[move[0]][move[1]] = "."
+			newBoard[move[2]-1][move[3]-1] = newBoard[move[0]-1][move[1]-1]
+			newBoard[move[0]-1][move[1]-1] = "."
 			return newBoard
 
-	def play(self, n, player1, player2):
+	def play(self, player1, player2):
 		self.start()
 		print "Welcome to Konane!"
-		for i in range (0, n):
-			print self
+		print self
 		move = 0
 		while (move != -1):
 			newBoard = []
 			print "Turn:", player1.symbol
+			print "Legal moves:", self.getLegalMoves(self.board, player1)
 			move = player1.getMove(self.board)
 			try:
 				newBoard = self.attemptMove(self.board, player1, move)
 			except ValueError:
 				print "Unable to make move."
+				break;
 			if newBoard != []:
 				self.board = newBoard
 			self.boardToString(newBoard)
-		
+			print self.boardToString(newBoard)
+
+			print "Turn:", player2.symbol
+			print "Legal moves:", self.getLegalMoves(self.board, player2)
+			move = player2.getMove(self.board)
+			try:
+				newBoard = self.attemptMove(self.board, player1, move)
+			except ValueError:
+				print "Unable to make move."
+				break;
+			if newBoard != []:
+				self.board = newBoard
+			self.boardToString(newBoard)
+			print self.boardToString(newBoard)
+		print "Game over"
 
 class Player(Konane):
 	def __init__(self, symbol):
@@ -155,4 +171,4 @@ class Player(Konane):
 playerX = Player('X')
 playerO = Player('O')
 game = Konane(8)
-game.play(1, playerX, playerO)
+game.play(playerX, playerO)
