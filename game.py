@@ -65,18 +65,20 @@ class Konane:
 			legalMoves.append([self.size, self.size-1]*2)
 			return legalMoves
 		elif board[self.size/2][self.size/2] == ".":
+			print "ya"
 			m = self.size/2
-			legalMoves.append([m, m-1]*2)
 			legalMoves.append([m+1, m]*2)
+			legalMoves.append([m+2, m+1]*2)
+			legalMoves.append([m+1, m+2]*2)
 			legalMoves.append([m, m+1]*2)
-			legalMoves.append([m-1, m]*2)
 			return legalMoves
 		else:
+			print "no"
 			m = self.size/2 + 1
+			legalMoves.append([m-1, m-2]*2)
 			legalMoves.append([m, m-1]*2)
-			legalMoves.append([m+1, m]*2)
-			legalMoves.append([m, m+1]*2)
 			legalMoves.append([m-1, m]*2)
+			legalMoves.append([m-2, m-1]*2)
 			return legalMoves
 
 	# Checks if the board is at a beginning state by checking whether it contains '.' since that is the symbol for an empty space
@@ -86,7 +88,6 @@ class Konane:
 			for y in range (self.size):
 				if board[x][y] == ".":
 					count += 1
-		print "opening move?", count<= 1
 		return count <= 1
 
 	def valid(self, move):
@@ -101,11 +102,37 @@ class Konane:
 			if player.symbol == 'X':
 				return self.firstMove(board)
 			else:
-				print "got here"
 				return self.secondMove(board)
 		else:
-			# TODO 
-			return []
+			for r in range(self.size):
+				for c in range(self.size):
+					if board[r][c] == player.symbol:
+						# Top
+						# Check whether piece is in 3rd row or more
+						if c >= 2:
+							if self.valid([r, c-1]) and board[r][c-1] == self.opponent(player.symbol):
+								if self.valid([r, c-2]) and board[r][c-2] == ".":
+									legalMoves.append([r+1, c+1, r+1, c-1])
+						# Right
+						# Check whether piece is at least 2 less than length
+						if r <= (self.size - 2):
+							if self.valid([r+1, c]) and board[r+1][c] == self.opponent(player.symbol):
+								if self.valid([r+2, c]) and board[r+2][c] == ".":
+									legalMoves.append([r+1, c+1, r+3, c+1])
+						#Left
+						# Check whether piece is at least 2 more than 0
+						if r >= 2:
+							if self.valid([r-1, c]) and board[r-1][c] == self.opponent(player.symbol):
+								if self.valid([r-2, c]) and board[r-2][c] == ".":
+									legalMoves.append([r+1, c+1, r-1, c+1])
+						#Bottom
+						# Check whether the piece is at least 2 less than length
+						if c <= (self.size - 2):
+							if self.valid([r, c+1]) and board[r][c+1] == self.opponent(player.symbol):
+								if self.valid([r, c+2]) and board[r][c+2] == ".":
+									print "wat"
+									legalMoves.append([r+1, c+1, r+1, c+3])
+		return legalMoves
 
 	# Updates board based on move if the move is valid to the board and is a legal move
 	def attemptMove(self, board, player, move):
@@ -118,6 +145,7 @@ class Konane:
 			raise ValueError('Illegal move.')
 		else:
 			newBoard = board
+			# Had to subtract 1 since user is inputting based on 1-8 grid not 0-7
 			newBoard[move[2]-1][move[3]-1] = newBoard[move[0]-1][move[1]-1]
 			newBoard[move[0]-1][move[1]-1] = "."
 			return newBoard
@@ -146,7 +174,7 @@ class Konane:
 			print "Legal moves:", self.getLegalMoves(self.board, player2)
 			move = player2.getMove(self.board)
 			try:
-				newBoard = self.attemptMove(self.board, player1, move)
+				newBoard = self.attemptMove(self.board, player2, move)
 			except ValueError:
 				print "Unable to make move."
 				break;
@@ -162,8 +190,8 @@ class Player(Konane):
 		self.name = "Human"
 
 	def getMove(self, board):
-		r1, c1, r2, c2 = input("Enter position of piece to move and where to move it. r1, c1, r2, c2 : ")
-		if r1 == -1:
+		r1, c1, r2, c2 = input("Enter start and end position of piece in form of row1, column1, row2, column2: ")
+		if []:
 			return -1;
 		else:
 			return [r1, c1, r2, c2]
