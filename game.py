@@ -16,7 +16,7 @@ class Konane:
 			if self.size % 2 == 0:
 				value = self.opponent(value)
 
-	# Given symbol, returns opponent's symbol either 'X' or 'O'	
+	# Given symbol, returns opponent's symbol either 'X' or 'O'
 	def opponent(self, symbol):
 		if symbol == 'X':
 			return 'O'
@@ -110,29 +110,29 @@ class Konane:
 						# Top
 						# Check whether piece is in 3rd row or more
 						if c > 2:
-							if self.valid([r, c-1]) and board[r][c-1] == self.opponent(player.symbol):
-								if self.valid([r, c-2]) and board[r][c-2] == '.':
+							if self.valid([r+1, c]) and board[r][c-1] == self.opponent(player.symbol):
+								if self.valid([r+1, c-1]) and board[r][c-2] == '.':
 									legalMoves.append([r+1, c+1, r+1, c-1])
 									print "a", [r+1, c+1, r+1, c-1]
 						# Right
 						# Check whether piece is at least 2 less than length
 						if r < (self.size - 2):
-							if self.valid([r+1, c]) and board[r+1][c] == self.opponent(player.symbol):
-								if self.valid([r+2, c]) and board[r+2][c] == '.':
+							if self.valid([r+2, c+1]) and board[r+1][c] == self.opponent(player.symbol):
+								if self.valid([r+3, c+1]) and board[r+2][c] == '.':
 									legalMoves.append([r+1, c+1, r+3, c+1])
 									print "b", [r+1, c+1, r+3, c+1]
 						#Left
 						# Check whether piece is at least 2 more than 0
-						if r > 2:
-							if self.valid([r-1, c]) and board[r-1][c] == self.opponent(player.symbol):
-								if self.valid([r-2, c]) and board[r-2][c] == '.':
+						if r >= 2 and c < 8:
+							if self.valid([r, c+1]) and board[r][c+1] == self.opponent(player.symbol):
+								if self.valid([r-1, c+1]) and board[r-1][c+1] == '.':
 									legalMoves.append([r+1, c+1, r-1, c+1])
 									print "c", [r+1, c+1, r-1, c+1]
 						#Bottom
 						# Check whether the piece is at least 2 less than length
 						if c < (self.size - 2):
-							if self.valid([r, c+1]) and board[r][c+1] == self.opponent(player.symbol):
-								if self.valid([r, c+2]) and board[r][c+2] == '.':
+							if self.valid([r+1, c+2]) and board[r][c+1] == self.opponent(player.symbol):
+								if self.valid([r+1, c+3]) and board[r][c+2] == '.':
 									legalMoves.append([r+1, c+1, r+1, c+3])
 									print "d", [r+1, c+1, r+1, c+3]
 		return legalMoves
@@ -193,7 +193,7 @@ class Player(Konane):
 		self.name = "Human"
 
 	def getMove(self, board):
-		r1, c1, r2, c2 = input("Enter start and end position of piece in form of row1, column1, row2, column2: ")
+		r1, c1, r2, c2 = input("Your move: ")
 		if []:
 			return -1;
 		else:
