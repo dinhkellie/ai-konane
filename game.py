@@ -111,7 +111,6 @@ class Konane:
 					if board[r][c] == player.symbol:
 						# Top
 						# Check whether piece is in 3rd row or more
-<<<<<<< HEAD
 						if c > 1:
 							print self.boardToString(board)
 							print [r, c-1], board[r][c-1]
@@ -142,34 +141,6 @@ class Konane:
 								print "d", [r+1, c+1, r+1, c+3]
 				print "\n"
 			print "\n"
-=======
-						if c > 2:
-							if self.valid([r+1, c]) and board[r][c-1] == self.opponent(player.symbol):
-								if self.valid([r+1, c-1]) and board[r][c-2] == '.':
-									legalMoves.append([r+1, c+1, r+1, c-1])
-									print "a", [r+1, c+1, r+1, c-1]
-						# Right
-						# Check whether piece is at least 2 less than length
-						if r < (self.size - 2):
-							if self.valid([r+2, c+1]) and board[r+1][c] == self.opponent(player.symbol):
-								if self.valid([r+3, c+1]) and board[r+2][c] == '.':
-									legalMoves.append([r+1, c+1, r+3, c+1])
-									print "b", [r+1, c+1, r+3, c+1]
-						#Left
-						# Check whether piece is at least 2 more than 0
-						if r >= 2 and c < 8:
-							if self.valid([r, c+1]) and board[r][c+1] == self.opponent(player.symbol):
-								if self.valid([r-1, c+1]) and board[r-1][c+1] == '.':
-									legalMoves.append([r+1, c+1, r-1, c+1])
-									print "c", [r+1, c+1, r-1, c+1]
-						#Bottom
-						# Check whether the piece is at least 2 less than length
-						if c < (self.size - 2):
-							if self.valid([r+1, c+2]) and board[r][c+1] == self.opponent(player.symbol):
-								if self.valid([r+1, c+3]) and board[r][c+2] == '.':
-									legalMoves.append([r+1, c+1, r+1, c+3])
-									print "d", [r+1, c+1, r+1, c+3]
->>>>>>> 05e077839a61f97f1a94db1bdb89bdfe8de018ad
 		return legalMoves
 
 	# Updates board based on move if the move is valid to the board and is a legal move
@@ -185,6 +156,23 @@ class Konane:
 			# Had to subtract 1 since user is inputting based on 1-8 grid not 0-7
 			board[move[2]-1][move[3]-1] = board[move[0]-1][move[1]-1]
 			board[move[0]-1][move[1]-1] = '.'
+
+			if not self.openingMove(board):
+
+				if move[0] == move[2]:
+					#[1, 3, 1, 1]
+					if move[1] > move[3]:
+						board[move[0]-1][move[1] - move[3] - 1] = '.'
+					#[1, 1, 1, 3]
+					else:
+						board[move[0]-1][move[3] - move[1] - 1] = '.'
+				if move[1] == move[3]:
+					#[3, 1, 1, 1]
+					if move[0] > move[2]:
+						board[move[0] - move[2] - 1][move[1]] = '.'
+					#[1, 3, 3, 3]
+					else: 
+						board[move[2] - move[0] - 1][move[1]] = '.'
 			return board
 
 	def play(self, player1, player2):
