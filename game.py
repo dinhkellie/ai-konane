@@ -65,7 +65,6 @@ class Konane:
 			legalMoves.append([self.size, self.size-1]*2)
 			return legalMoves
 		elif board[self.size/2][self.size/2] == '.':
-			print "ya"
 			m = self.size/2
 			legalMoves.append([m+1, m]*2)
 			legalMoves.append([m+2, m+1]*2)
@@ -73,7 +72,6 @@ class Konane:
 			legalMoves.append([m, m+1]*2)
 			return legalMoves
 		else:
-			print "no"
 			m = self.size/2 + 1
 			legalMoves.append([m-1, m-2]*2)
 			legalMoves.append([m, m-1]*2)
@@ -112,7 +110,6 @@ class Konane:
 						# Top
 						# Check whether piece is in 3rd row or more
 						if c > 1:
-							print self.boardToString(board)
 							print [r, c-1], board[r][c-1]
 							if board[r][c-1] == self.opponent(player.symbol) and board[r][c-2] == '.':
 								legalMoves.append([r+1, c+1, r+1, c-1])
@@ -147,6 +144,8 @@ class Konane:
 	def attemptMove(self, board, player, move):
 		# how to get which player's turn?
 		legalMoves = self.getLegalMoves(board, player)
+		a = -1
+		b = -1
 
 		if not self.valid(move):
 			raise ValueError('Invalid move.')
@@ -155,24 +154,37 @@ class Konane:
 		else:
 			# Had to subtract 1 since user is inputting based on 1-8 grid not 0-7
 			board[move[2]-1][move[3]-1] = board[move[0]-1][move[1]-1]
-			board[move[0]-1][move[1]-1] = '.'
+			board[move[1]-1][move[0]-1] = '.'
 
 			if not self.openingMove(board):
 
+				# If a move is a jump move, essentially all the other moves besides opening ones
 				if move[0] == move[2]:
+					a = move[0]-1
 					#[1, 3, 1, 1]
 					if move[1] > move[3]:
-						board[move[0]-1][move[1] - move[3] - 1] = '.'
+						print "1", [move[0]-1, (move[1] - move[3]) - 1]
+						b = (move[1] - move[3]) - 1
+						# board[move[0]-1][(move[1] - move[3]) - 1] = '.'
 					#[1, 1, 1, 3]
 					else:
-						board[move[0]-1][move[3] - move[1] - 1] = '.'
+						print "2", [move[0]-1, (move[3] - move[1]) - 1]
+						b = (move[3] - move[1]) - 1
+						# board[move[0]-1][(move[3] - move[1]) - 1] = '.'
+
 				if move[1] == move[3]:
+					b = move[1]
 					#[3, 1, 1, 1]
 					if move[0] > move[2]:
-						board[move[0] - move[2] - 1][move[1]] = '.'
+						print "3", [(move[0] - move[2]) - 1, move[1]]
+						a = (move[0] - move[2]) - 1
+						# board[(move[0] - move[2]) - 1][move[1]] = '.'
 					#[1, 3, 3, 3]
-					else: 
-						board[move[2] - move[0] - 1][move[1]] = '.'
+					else:
+						print "4", [(move[2] - move[0]) - 1, move[1]]
+						a = (move[2] - move[0]) - 1
+						# board[(move[2] - move[0]) - 1][move[1]] = '.'
+
 			return board
 
 	def play(self, player1, player2):
@@ -180,15 +192,17 @@ class Konane:
 		print "Welcome to Konane!"
 		print self
 		move = 0
+
 		while (move != -1):
 			print "Turn:", player1.symbol
 			print "Legal moves:", self.getLegalMoves(self.board, player1)
 			move = player1.getMove(self.board)
 			try:
-				self.baord = self.attemptMove(self.board, player1, move)
+				self.board = self.attemptMove(self.board, player1, move)
 			except ValueError:
 				print "Unable to make move."
-				break;
+				self.board = self.attemptMove(self.board, player1, move)
+				break
 			self.boardToString(self.board)
 			print self.boardToString(self.board)
 
@@ -199,7 +213,8 @@ class Konane:
 				self.board = self.attemptMove(self.board, player2, move)
 			except ValueError:
 				print "Unable to make move."
-				break;
+				self.board = self.attemptMove(self.board, player1, move)
+				break
 			self.boardToString(self.board)
 			print self.boardToString(self.board)
 		print "Game over"
