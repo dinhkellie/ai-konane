@@ -117,28 +117,24 @@ class Konane:
 							if board[r-1][c] == opponent:
 								if board[r-2][c] == player.symbol:
 									legalMoves.append([c +1, r-2 +1, c +1, r +1])
-									print [c +1, r-2 +1, c +1, r +1]
 
 						#Down
 						if r+2 <= self.size - 1:
 							if board[r+1][c] == opponent:
 								if board[r+2][c] == player.symbol:
 									legalMoves.append([c +1, r+2 +1, c +1, r +1])
-									print [c +1, r+2 +1, c +1, r +1]
 
 						#Left
 						if c >= 2:
 							if board[r][c-1] == opponent:
 								if board[r][c-2] == player.symbol:
 									legalMoves.append([c-2 +1, r +1, c +1, r +1])
-									print [c-2 +1, r +1, c +1, r +1]
 
 						#Right
 						if c+2 < self.size - 1:
 							if board[r][c+1] == opponent:
 								if board[r][c+2] == player.symbol:
 									legalMoves.append([c+2 +1, r +1, c +1, r +1])
-									print [c+2 +1, r +1, c +1, r +1]
 			print "\n"
 		return legalMoves
 
@@ -167,7 +163,6 @@ class Konane:
 
 				# 3, 5, 3, 3
 				if move[0] == move[2]:
-					print "if", move[0], "==" , move[2]
 					if move[3] > move[1]:
 						a = move[1] + 1
 						b = move[0]
@@ -177,49 +172,27 @@ class Konane:
 
 				# 4, 6, 4, 4
 				if move[1] == move[3]:
-					print "if", move[1], "==" , move[3]
 					if move[0] > move[2]:
-						a = move[2] + 1
-						b = move[1]
+						a = move[1]
+						b = move[2] + 1
 					else:
-						a = move[0] + 1
-						b = move[1]
+						a = move[1]
+						b = move[0] + 1
 
 				print a, b
 				
 				if a > 0 and b > 0:
 					board[a][b] = "."
-				# # If a move is a jump move, essentially all the other moves besides opening ones
-				# if move[0] == move[2]:
-				# 	a = move[0]-1
-				# 	#[1, 3, 1, 1]
-				# 	if move[1] > move[3]:
-				# 		print "1", [move[0]-1, (move[1] - move[3]) - 1]
-				# 		b = (move[1] - move[3]) - 1
-				# 		# board[move[0]-1][(move[1] - move[3]) - 1] = '.'
-				# 	#[1, 1, 1, 3]
-				# 	else:
-				# 		print "2", [move[0]-1, (move[3] - move[1]) - 1]
-				# 		b = (move[3] - move[1]) - 1
-				# 		# board[move[0]-1][(move[3] - move[1]) - 1] = '.'
-
-				# if move[1] == move[3]:
-				# 	b = move[1]
-				# 	#[3, 1, 1, 1]
-				# 	if move[0] > move[2]:
-				# 		print "3", [(move[0] - move[2]) - 1, move[1]]
-				# 		a = (move[0] - move[2]) - 1
-				# 		# board[(move[0] - move[2]) - 1][move[1]] = '.'
-				# 	#[1, 3, 3, 3]
-				# 	else:
-				# 		print "4", [(move[2] - move[0]) - 1, move[1]]
-				# 		a = (move[2] - move[0]) - 1
-				# 		# board[(move[2] - move[0]) - 1][move[1]] = '.'
-
 		board[move[3]][move[2]] = board[move[0]][move[1]]
 		board[move[1]][move[0]] = "."
 
 		return board
+
+	def GameOver(self, board, player):
+		if self.getLegalMoves(board, player) == []:
+			return True
+		else:
+			return False
 
 	def play(self, player1, player2):
 		self.start()
@@ -240,6 +213,11 @@ class Konane:
 			self.boardToString(self.board)
 			print self.boardToString(self.board)
 
+			if self.GameOver(self.board, player1):
+				print player1.symbol, "loss"
+				print player2.symbol, "win"
+				break
+
 			print "Turn:", player2.symbol
 			print "Legal moves:", self.getLegalMoves(self.board, player2)
 			move = player2.getMove(self.board)
@@ -251,6 +229,12 @@ class Konane:
 				break
 			self.boardToString(self.board)
 			print self.boardToString(self.board)
+
+			if self.GameOver(self.board, player2):
+				print player2.symbol, "loss"
+				print player1.symbol, "win"
+				break
+				
 		print "Game over"
 
 class Player(Konane):
