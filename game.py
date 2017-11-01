@@ -86,7 +86,7 @@ class Konane:
 			for y in range (self.size):
 				if board[x][y] == ".":
 					count += 1
-		return count <= 1
+		return count
 
 	# Checks if inputted [row, column] position is within board's boundaries 1-8
 	def valid(self, move):
@@ -96,7 +96,7 @@ class Konane:
 	def getLegalMoves(self, board, player):
 		legalMoves = []
 		# Determines whether the current move is first or second based on symbols on the board
-		if self.openingMove(board):
+		if self.openingMove(board) <= 1:
 			# Dark always goes first
 			if player.symbol == 'X':
 				return self.firstMove(board)
@@ -106,8 +106,7 @@ class Konane:
 			for r in range(self.size):
 				for c in range(self.size):
 					if board[r][c] == ".":
-						#print [r, c], "up:", board[r-1][c], "down", board[r+1][c], "left", board[r][c-1], "right", board[r][c+1]
-
+						
 						if player.symbol == 'X':
 							opponent = 'O'
 						else:
@@ -115,71 +114,31 @@ class Konane:
 
 						#Up
 						if r >= 2:
-							print "if r >= 2", [r, c]
 							if board[r-1][c] == opponent:
-								print "if board[r-1][c]", [r-1, c], opponent
 								if board[r-2][c] == player.symbol:
 									legalMoves.append([c +1, r-2 +1, c +1, r +1])
 									print [c +1, r-2 +1, c +1, r +1]
 
 						#Down
 						if r+2 <= self.size - 1:
-							print "if r <= self.size - 2", [r, c]
 							if board[r+1][c] == opponent:
-								print "if board[r+1][c]", [r+1, c], opponent
 								if board[r+2][c] == player.symbol:
 									legalMoves.append([c +1, r+2 +1, c +1, r +1])
 									print [c +1, r+2 +1, c +1, r +1]
 
 						#Left
 						if c >= 2:
-							print "if c >= 2", [r, c]
 							if board[r][c-1] == opponent:
-								print "if board[r][c-1]", [r, c-1], opponent
 								if board[r][c-2] == player.symbol:
 									legalMoves.append([c-2 +1, r +1, c +1, r +1])
 									print [c-2 +1, r +1, c +1, r +1]
 
 						#Right
 						if c+2 < self.size - 1:
-							print "if c <= self.size - 2", [r, c]
 							if board[r][c+1] == opponent:
-								print "if board[r][c+1]", [r, c+1], opponent
 								if board[r][c+2] == player.symbol:
 									legalMoves.append([c+2 +1, r +1, c +1, r +1])
 									print [c+2 +1, r +1, c +1, r +1]
-
-					# if board[r][c] == player.symbol:
-
-					# 	# Top
-					# 	# Check whether piece is in 3rd row or more
-					# 	if c > 1:
-					# 		print [r, c-1], board[r][c-1]
-					# 		if board[r][c-1] == self.opponent(player.symbol) and board[r][c-2] == '.':
-					# 			legalMoves.append([r+1, c+1, r+1, c-1])
-					# 			print "a", [r+1, c+1, r+1, c-1]
-					# 	# Right
-					# 	# Check whether piece is at least 2 less than length
-					# 	if r < (self.size - 2):
-					# 		print [r+1, c], board[r+1][c]
-					# 		if board[r+1][c] == self.opponent(player.symbol) and board[r+2][c] == '.':
-					# 			legalMoves.append([r+1, c+1, r+3, c+1])
-					# 			print "b", [r+1, c+1, r+3, c+1]
-					# 	#Left
-					# 	# Check whether piece is at least 2 more than 0
-					# 	if r > 1:
-					# 		print [r-1, c], board[r-1][c]
-					# 		if board[r-1][c] == self.opponent(player.symbol) and board[r-2][c] == '.':
-					# 			legalMoves.append([r+1, c+1, r-1, c+1])
-					# 			print "c", [r+1, c+1, r-1, c+1]
-
-					# 	#Bottom
-					# 	# Check whether the piece is at least 2 less than length
-					# 	if c < (self.size - 2):
-					# 		print [r, c+1], board[r][c+1]
-					# 		if board[r][c+1] == self.opponent(player.symbol) and board[r][c+2] == '.':
-					# 			legalMoves.append([r+1, c+1, r+1, c+3])
-					# 			print "d", [r+1, c+1, r+1, c+3]
 			print "\n"
 		return legalMoves
 
@@ -194,14 +153,42 @@ class Konane:
 			raise ValueError('Illegal move.')
 		else:
 			# Had to subtract 1 since user is inputting based on 1-8 grid not 0-7
-			move = [boardMove[1]-1, boardMove[0]-1, boardMove[3]-1, boardMove[2]-1]
-			print move
+			move = [boardMove[0]-1, boardMove[1]-1, boardMove[2]-1, boardMove[3]-1]
 
-			board[move[2]][move[3]] = board[move[0]][move[1]]
-			board[move[0]][move[1]] = '.'
+			print self.openingMove(board)
 
-			if not self.openingMove(board):
+			if self.openingMove(board) <= 1:
+				print "opening move"
+			else:
 				print "not opening move"
+				board[move[1]][move[0]] = "."
+				a = 0
+				b = 0
+
+				# 3, 5, 3, 3
+				if move[0] == move[2]:
+					print "if", move[0], "==" , move[2]
+					if move[3] > move[1]:
+						a = move[1] + 1
+						b = move[0]
+					else:
+						a = move[3] + 1
+						b = move[0]
+
+				# 4, 6, 4, 4
+				if move[1] == move[3]:
+					print "if", move[1], "==" , move[3]
+					if move[0] > move[2]:
+						a = move[2] + 1
+						b = move[1]
+					else:
+						a = move[0] + 1
+						b = move[1]
+
+				print a, b
+				
+				if a > 0 and b > 0:
+					board[a][b] = "."
 				# # If a move is a jump move, essentially all the other moves besides opening ones
 				# if move[0] == move[2]:
 				# 	a = move[0]-1
@@ -228,6 +215,9 @@ class Konane:
 				# 		print "4", [(move[2] - move[0]) - 1, move[1]]
 				# 		a = (move[2] - move[0]) - 1
 				# 		# board[(move[2] - move[0]) - 1][move[1]] = '.'
+
+		board[move[3]][move[2]] = board[move[0]][move[1]]
+		board[move[1]][move[0]] = "."
 
 		return board
 
