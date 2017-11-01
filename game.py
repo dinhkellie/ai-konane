@@ -1,3 +1,5 @@
+import random
+
 class Konane:
 	def __init__(self, n):
 		self.size = n
@@ -135,7 +137,6 @@ class Konane:
 							if board[r][c+1] == opponent:
 								if board[r][c+2] == player.symbol:
 									legalMoves.append([c+2 +1, r +1, c +1, r +1])
-			print "\n"
 		return legalMoves
 
 	# Updates board based on move if the move is valid to the board and is a legal move
@@ -150,8 +151,6 @@ class Konane:
 		else:
 			# Had to subtract 1 since user is inputting based on 1-8 grid not 0-7
 			move = [boardMove[0]-1, boardMove[1]-1, boardMove[2]-1, boardMove[3]-1]
-
-			print self.openingMove(board)
 
 			if self.openingMove(board) <= 1:
 				print "opening move"
@@ -178,11 +177,10 @@ class Konane:
 					else:
 						a = move[1]
 						b = move[0] + 1
-
-				print a, b
 				
 				if a > 0 and b > 0:
 					board[a][b] = "."
+
 		board[move[3]][move[2]] = board[move[0]][move[1]]
 		board[move[1]][move[0]] = "."
 
@@ -197,6 +195,8 @@ class Konane:
 	def play(self, player1, player2):
 		self.start()
 		print "Welcome to Konane!"
+		player1.initialize('X')
+		player2.initialize('O')
 		print self
 		move = 0
 
@@ -234,13 +234,19 @@ class Konane:
 				print player2.symbol, "loss"
 				print player1.symbol, "win"
 				break
-				
+
 		print "Game over"
 
-class Player(Konane):
-	def __init__(self, symbol):
-		self.symbol = symbol
+class Player:
+	def initialize(self, symbol):
+		abstract()
+	def getMove(self, board):
+		abstract()
+
+class HumanPlayer(Konane, Player):
+	def initialize(self, symbol):
 		self.name = "Human"
+		self.symbol = symbol
 
 	def getMove(self, board):
 		r1, c1, r2, c2 = input("Your move: ")
@@ -249,7 +255,21 @@ class Player(Konane):
 		else:
 			return [r1, c1, r2, c2]
 
-playerX = Player('X')
-playerO = Player('O')
+class RandomPlayer(Konane, Player):
+	def initialize(self, symbol):
+		self.name = "Random"
+		self.symbol = symbol
+
+	def getMove(self, board):
+		legalMoves = self.getLegalMoves(board, self.symbol)
+		if len(legalMoves) == 0:
+			return -1
+		else:
+			return legalMoves[random.randrange(0, n)]
+
+playerX = HumanPlayer(8)
+# playerX.initialize('X')
+playerO = HumanPlayer(8)
+# playerO.initialize('O')
 game = Konane(8)
 game.play(playerX, playerO)
